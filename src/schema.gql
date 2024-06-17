@@ -1,0 +1,11 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type HelloResult {
+  result: String!
+}
+
+type Query {
+  sayHello: HelloResult!
+}

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppRoutingModule } from './app.routing-module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
-import { HelloModule } from './hello.module';
+import { GraphqlModule } from './graphql.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
@@ -13,7 +13,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     AppRoutingModule,
-    HelloModule
+    GraphqlModule
   ],
 })
 export class AppModule {}

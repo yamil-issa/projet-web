@@ -6,6 +6,34 @@ type HelloResult {
   result: String!
 }
 
+type User {
+  id: Int!
+  username: String!
+  email: String!
+  password: String!
+  conversations: [Conversation!]!
+}
+
+type Message {
+  id: Int!
+  content: String!
+  createdAt: String!
+  author: User!
+}
+
+type Conversation {
+  id: Int!
+  participants: [User!]!
+  messages: [Message!]!
+  startedAt: String!
+}
+
 type Query {
   sayHello: HelloResult!
+  user(id: Int!): User!
+  userConversations(id: Int!): [Conversation!]!
+  message(id: Int!): Message!
+  conversation(id: Int!): Conversation!
+  conversations: [Conversation!]!
+  conversationMessages(id: Int!): [Message!]!
 }

@@ -1,6 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 import { HealthCheckService } from "./healthCheck.service";
-import { BullQueueProvider } from "bullmq/bullQueue.provider";
+import { BullQueueProvider } from "src/infrastructure/bullmq/bullQueue.provider";
 
 @Controller()
 export class HealthCheckController {

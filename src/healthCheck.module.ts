@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HealthCheckController } from './healthCheck.controller';
 import { HealthCheckService } from 'src/healthCheck.service';
-import { BullMqModule } from 'bullmq/bullmq.module';
+import { BullMqModule } from 'src/infrastructure/bullmq/bullmq.module';
 
 @Module({
   imports: [BullMqModule],

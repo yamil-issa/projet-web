@@ -3,8 +3,19 @@ import { HelloResolver } from './resolvers/hello.resolver';
 import { UserResolver } from './resolvers/user.resolver';
 import { MessageResolver } from './resolvers/message.resolver';
 import { ConversationResolver } from './resolvers/conversation.resolver';
+import { BullMqModule } from './infrastructure/bullmq/bullmq.module';
+import { SendMessageMutation } from './mutations/message/sendMessage';
+import { CreateConversationMutation } from './mutations/conversation/createConversation';
 
 @Module({
-  providers: [HelloResolver, UserResolver, MessageResolver, ConversationResolver],
+  imports: [BullMqModule],
+  providers: [
+    HelloResolver,
+    UserResolver,
+    MessageResolver,
+    ConversationResolver,
+    SendMessageMutation,
+    CreateConversationMutation,
+  ],
 })
 export class GraphqlModule {}

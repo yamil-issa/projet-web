@@ -1,6 +1,7 @@
 import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
 import { Message } from 'src/entities/message.entity';
 import { SendMessageMutation } from 'src/mutations/message/sendMessage';
+import { BullQueueProvider } from 'src/infrastructure/bullmq/bullQueue.provider';
 
 @Resolver()
 export class MessageResolver {
@@ -24,16 +25,5 @@ export class MessageResolver {
    // Fetch message by id
    return this.messages.find((message) => message.id === id) || null;
   }
-
-  @Mutation(() => Message)
-  sendMessage(
-    @Args('userId', { type: () => Int }) userId: number,
-    @Args('conversationId', { type: () => Int }) conversationId: number,
-    @Args('content', { type: () => String }) content: string,
-  ): Promise<Message> {
-    const sendMessageMutation = new SendMessageMutation();
-    return sendMessageMutation.sendMessage(userId, conversationId, content);
-  }
-  
 
 }

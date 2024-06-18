@@ -1,13 +1,18 @@
+import { Injectable } from "@nestjs/common";
 import { Args, Int, Mutation } from "@nestjs/graphql";
 import { usersArray, conversationsArray, messagesArray } from "src/data";
 import { Message } from "src/entities/message.entity";
+import { BullQueueProvider } from "src/infrastructure/bullmq/bullQueue.provider";
+import { MessageDTO } from "./message.dto";
 
-
+@Injectable()
 export class SendMessageMutation {
 
   private users = usersArray;
   private conversations = conversationsArray;
   private messages = messagesArray;
+
+  constructor(private readonly bullQueueProvider: BullQueueProvider) {}
 
   @Mutation(() => Message)
   async sendMessage(
@@ -29,8 +34,19 @@ export class SendMessageMutation {
       author: user,
     };
 
-    this.messages.push(newMessage);
-    conversation.messages.push(newMessage);
+    const newMessageDTO: MessageDTO = {
+        id: newMessage.id,
+        content: newMessage.content,
+        createdAt: newMessage.createdAt,
+        authorId: user.id,
+      };
+      
+    // Add message to the queue
+    await this.bullQueueProvider.addJob({
+        message: newMessageDTO,
+        conversationId: conversationId
+    });
+    
 
     return newMessage;
   }

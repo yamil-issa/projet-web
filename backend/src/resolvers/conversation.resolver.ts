@@ -3,10 +3,18 @@ import { Conversation } from 'src/entities/conversation.entity';
 import { Message } from 'src/entities/message.entity';
 import { conversationsArray } from 'src/data';
 import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
+import { SendMessageMutation } from 'src/mutations/message/sendMessage';
+import { BullQueueProvider } from 'src/infrastructure/bullmq/bullQueue.provider'; 
 
 @Resolver()
 export class ConversationResolver {
   private conversationsArray = conversationsArray;
+
+  constructor(
+    private readonly sendMessageMutation: SendMessageMutation,
+    private readonly bullQueueProvider: BullQueueProvider
+  ) {}
+
   @Query(() => Conversation)
   conversation(@Args('id', { type: () => Int }) id: number): Conversation | null{
     // Fetch conversation by id
@@ -37,6 +45,15 @@ export class ConversationResolver {
   ): Promise<Conversation> {
     const createConversationMutation = new CreateConversationMutation();
     return createConversationMutation.createConversation(userId1, userId2);
+  }
+
+  @Mutation(() => Message)
+  sendMessage(
+    @Args('userId', { type: () => Int }) userId: number,
+    @Args('conversationId', { type: () => Int }) conversationId: number,
+    @Args('content', { type: () => String }) content: string,
+  ): Promise<Message> {
+    return this.sendMessageMutation.sendMessage(userId, conversationId, content);
   }
 
 

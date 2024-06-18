@@ -18,11 +18,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Change Directory to backend
-        run: cd backend
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Project
-        run: npm run build
+      - name: Change Directory and Build Project
+        run: |
+          cd backend
+          npm install
+          npm run build

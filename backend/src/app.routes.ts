@@ -1,5 +1,5 @@
 import { Routes } from '@nestjs/core';
-import { HealthCheckModule } from './healthCheck.module';
+import { HealthCheckModule } from './healthCheck/healthCheck.module';
 
 export const routes: Routes = [
     {

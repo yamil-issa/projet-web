@@ -1,6 +1,6 @@
 # Projet Web
 - Nom : ISSA Yamil
-- Groupe : 3
+- Groupe 8
 
 [Etude de faisabilité](study.md)
 

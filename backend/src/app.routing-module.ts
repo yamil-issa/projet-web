@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 import { routes } from './app.routes';
-import { HealthCheckModule } from './healthCheck.module';
+import { HealthCheckModule } from './healthCheck/healthCheck.module';
 
 @Module({
     exports: [RouterModule],

@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Change Directory
+      - name: Change Directory to backend
         run: cd backend
 
       - name: Install Dependencies

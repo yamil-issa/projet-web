@@ -1,47 +1,12 @@
-import { Resolver, Query, Args, Int } from '@nestjs/graphql';
-import { Conversation } from 'src/graphql/entities/conversation.entity';
-import { Message } from 'src/graphql/entities/message.entity';
+import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
+import { Conversation } from 'src/entities/conversation.entity';
+import { Message } from 'src/entities/message.entity';
+import { conversationsArray } from 'src/data';
+import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
 
 @Resolver()
 export class ConversationResolver {
-  // array of conversations
-  private conversationsArray = [
-    {
-      id: 1,
-      participants: [
-        {
-          id: 1,
-          username: 'john_doe',
-          email: 'doe@gmail.com',
-          password: '123',
-          conversations: []
-        },
-        {
-          id: 2,
-          username: 'jane_doe',
-          email: 'jane@gmail.com',
-          password: '456',
-          conversations: []
-        },
-      ],
-      messages: [
-        {
-          id: 1,
-          content: 'Hello Jane',
-          createdAt: '2024-05-01T12:00:00Z',
-          author: {
-            id: 1,
-            username: 'john_doe',
-            email: 'doe@gmail.com',
-            password: '123',
-            conversations: []
-          },
-        },
-      ],
-      startedAt: '2024-05-01T12:00:00Z',
-    },
-  ];
-
+  private conversationsArray = conversationsArray;
   @Query(() => Conversation)
   conversation(@Args('id', { type: () => Int }) id: number): Conversation | null{
     // Fetch conversation by id
@@ -64,5 +29,15 @@ export class ConversationResolver {
         }
         return conversation.messages;
     }
+  
+  @Mutation(() => Conversation)
+  createConversation(
+    @Args('userId1', { type: () => Int }) userId1: number,
+    @Args('userId2', { type: () => Int }) userId2: number,
+  ): Promise<Conversation> {
+    const createConversationMutation = new CreateConversationMutation();
+    return createConversationMutation.createConversation(userId1, userId2);
+  }
+
 
 }

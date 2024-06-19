@@ -21,7 +21,6 @@ export class BullConsumerProvider implements OnModuleInit, OnModuleDestroy {
       const conversation = conversationsArray.find(conv => conv.id === conversationId);
 
       if (conversation) {
-        // Convertir le DTO en entité Message
         const user = usersArray.find(u => u.id === message.authorId);
         const newMessage = {
           ...message,

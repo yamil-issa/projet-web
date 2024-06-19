@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { MessageResolver } from '../resolvers/message.resolver';
-import { Message } from '../entities/message.entity';
-import { messagesArray } from '../graphql/data';
+import { MessageResolver } from '../src/resolvers/message.resolver';
+import { Message } from '../src/entities/message.entity';
+import { messagesArray } from '../src/graphql/data';
 
 describe('MessageResolver', () => {
   let resolver: MessageResolver;

@@ -1,4 +1,3 @@
-// src/resolvers/message.resolver.spec.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { MessageResolver } from '../resolvers/message.resolver';
 import { Message } from '../entities/message.entity';

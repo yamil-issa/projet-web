@@ -1,18 +1,26 @@
 version: '3.8'
 
+networks:
+  app-network:
+    driver: bridge
+
 services:
 
   backend:
     build:
-      context: ./backend 
+      context: ./backend
     container_name: nestjs-app
+    links:
+      - redis
     ports:
-      - "3000:3000" 
+      - "3000:3000"
     depends_on:
-      - redis 
+      - redis
     environment:
       - NODE_ENV=production
-      
+    networks:
+      - app-network
+
   redis:
     image: redis:latest
     container_name: redis
@@ -21,6 +29,8 @@ services:
     volumes:
       - redis-data:/data
     restart: always
+    networks:
+      - app-network
 
 volumes:
   redis-data:

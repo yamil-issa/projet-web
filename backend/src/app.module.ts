@@ -14,7 +14,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       path: '/api',
     }),
     AppRoutingModule,
-    GraphqlModule
+    GraphqlModule,
   ],
 })
 export class AppModule {}

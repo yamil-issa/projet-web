@@ -4,7 +4,6 @@ import { Message } from 'src/entities/message.entity';
 import { conversationsArray } from 'src/graphql/data';
 import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
 import { SendMessageMutation } from 'src/mutations/message/sendMessage';
-import { BullQueueProvider } from 'src/infrastructure/bullmq/bullQueue.provider'; 
 
 @Resolver()
 export class ConversationResolver {
@@ -12,7 +11,6 @@ export class ConversationResolver {
 
   constructor(
     private readonly sendMessageMutation: SendMessageMutation,
-    private readonly bullQueueProvider: BullQueueProvider
   ) {}
 
   @Query(() => Conversation)

@@ -1,21 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import Redis from 'ioredis';
+import { RedisConfig } from '../configuration/redis.config';
 
 @Injectable()
 export class BullQueueProvider {
-  private connection: Redis;
   public myQueue: Queue;
 
-  constructor() {
-    this.connection = new Redis({
-      host: 'localhost',
-      port: 6379,
-      maxRetriesPerRequest: null
+  constructor(private readonly redisConfig: RedisConfig) {
+    this.myQueue = new Queue('my-queue', {
+    connection: this.redisConfig.getRedisClient(),
     });
-
-    this.myQueue = new Queue('my-queue', { connection: this.connection });
-  }
+    }
 
   async addJob(data: any) {
     await this.myQueue.add('my-job', data);

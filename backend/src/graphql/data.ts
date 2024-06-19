@@ -1,6 +1,6 @@
-import { Conversation } from "./entities/conversation.entity";
-import { Message } from "./entities/message.entity";
-import { User } from "./entities/user.entity";
+import { Conversation } from "../entities/conversation.entity";
+import { Message } from "../entities/message.entity";
+import { User } from "../entities/user.entity";
 
 export const usersArray: User[] = [
   {

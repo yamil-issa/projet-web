@@ -1,6 +1,6 @@
 import { Resolver, Query, Args, Int} from '@nestjs/graphql';
 import { Message } from '../entities/message.entity';
-import { messagesArray } from '../data';
+import { messagesArray } from '../graphql/data';
 
 @Resolver()
 export class MessageResolver {

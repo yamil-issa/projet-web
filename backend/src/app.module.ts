@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppRoutingModule } from './app.routing-module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
-import { GraphqlModule } from './graphql.module';
+import { GraphqlModule } from './graphql/graphql.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({

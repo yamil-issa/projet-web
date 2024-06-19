@@ -1,6 +1,6 @@
 import { Args, Int, Mutation } from "@nestjs/graphql";
 import { Conversation } from "src/entities/conversation.entity";
-import { usersArray, conversationsArray } from "src/data";
+import { usersArray, conversationsArray } from "src/graphql/data";
 
 
 export class CreateConversationMutation {

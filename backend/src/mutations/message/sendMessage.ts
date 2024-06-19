@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Args, Int, Mutation } from "@nestjs/graphql";
-import { usersArray, conversationsArray, messagesArray } from "src/data";
+import { usersArray, conversationsArray, messagesArray } from "src/graphql/data";
 import { Message } from "src/entities/message.entity";
 import { BullQueueProvider } from "src/infrastructure/bullmq/bullQueue.provider";
 import { MessageDTO } from "./message.dto";

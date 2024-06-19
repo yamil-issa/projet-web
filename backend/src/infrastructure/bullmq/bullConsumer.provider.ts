@@ -1,8 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
 import Redis from 'ioredis';
-import { conversationsArray, usersArray } from "src/data";
-
+import { conversationsArray, usersArray } from 'src/graphql/data';
 @Injectable()
 export class BullConsumerProvider implements OnModuleInit, OnModuleDestroy {
   private connection: Redis;

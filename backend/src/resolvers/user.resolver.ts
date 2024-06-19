@@ -1,7 +1,7 @@
 import { Resolver, Query, Int, Args } from '@nestjs/graphql';
 import { Conversation } from 'src/entities/conversation.entity';
 import { User } from 'src/entities/user.entity';
-import { usersArray } from 'src/data';
+import { usersArray } from 'src/graphql/data';
 
 @Resolver()
 export class UserResolver { 

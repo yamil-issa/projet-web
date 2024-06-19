@@ -1,7 +1,7 @@
 import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
 import { Conversation } from 'src/entities/conversation.entity';
 import { Message } from 'src/entities/message.entity';
-import { conversationsArray } from 'src/data';
+import { conversationsArray } from 'src/graphql/data';
 import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
 import { SendMessageMutation } from 'src/mutations/message/sendMessage';
 import { BullQueueProvider } from 'src/infrastructure/bullmq/bullQueue.provider'; 

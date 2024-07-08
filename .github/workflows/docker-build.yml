@@ -47,6 +47,4 @@ jobs:
 
     - name: Trigger Render Deployment
       run: |
-        curl -X POST -d '{}' <YOUR_RENDER_WEBHOOK_URL>
-      env:
-        YOUR_RENDER_WEBHOOK_URL: ${{ secrets.RENDER_WEBHOOK_URL }}
+        curl -X POST -d '{}' ${{ secrets.RENDER_WEBHOOK_URL }}

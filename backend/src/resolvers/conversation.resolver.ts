@@ -1,48 +1,49 @@
 import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
 import { Conversation } from 'src/entities/conversation.entity';
 import { Message } from 'src/entities/message.entity';
-import { conversationsArray } from 'src/graphql/data';
 import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
 import { SendMessageMutation } from 'src/mutations/message/sendMessage';
+import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
 
 @Resolver()
 export class ConversationResolver {
-  private conversationsArray = conversationsArray;
-
   constructor(
+    private readonly redisConfig: RedisConfig,
+    private readonly createConversationMutation: CreateConversationMutation,
     private readonly sendMessageMutation: SendMessageMutation,
   ) {}
 
   @Query(() => Conversation)
-  conversation(@Args('id', { type: () => Int }) id: number): Conversation | null{
-    // Fetch conversation by id
-    return this.conversationsArray.find((conversation) => conversation.id === id) || null;
+  async conversation(@Args('id', { type: () => Int }) id: number): Promise<Conversation | null> {
+    const redisClient = this.redisConfig.getRedisClient();
+    const conversation = await redisClient.hget('conversations', id.toString());
+    return conversation ? JSON.parse(conversation) : null;
   }
 
-  // Query to get all conversations
   @Query(() => [Conversation])
-    conversations(): Conversation[] {
-        return this.conversationsArray;
-    }
+  async conversations(): Promise<Conversation[]> {
+    const redisClient = this.redisConfig.getRedisClient();
+    const conversations = await redisClient.hvals('conversations');
+    return conversations.map(conv => {
+      const parsedConversation = JSON.parse(conv);
+      parsedConversation.participantIds = parsedConversation.participantIds || [];
+      return parsedConversation;
+    });
+  }
 
-  // Query to get all messages of a conversation
   @Query(() => [Message])
-    conversationMessages(@Args('id', { type: () => Int }) id: number): Message[] {
-        // Fetch conversation by id
-        const conversation = this.conversationsArray.find((conversation) => conversation.id === id);
-        if (!conversation) {
-            return [];
-        }
-        return conversation.messages;
-    }
-  
+  async conversationMessages(@Args('id', { type: () => Int }) id: number): Promise<Message[]> {
+    const redisClient = this.redisConfig.getRedisClient();
+    const messages = await redisClient.hvals(`conversation:${id}:messages`);
+    return messages.map(msg => JSON.parse(msg));
+  }
+
   @Mutation(() => Conversation)
   createConversation(
     @Args('userId1', { type: () => Int }) userId1: number,
     @Args('userId2', { type: () => Int }) userId2: number,
   ): Promise<Conversation> {
-    const createConversationMutation = new CreateConversationMutation();
-    return createConversationMutation.createConversation(userId1, userId2);
+    return this.createConversationMutation.createConversation(userId1, userId2);
   }
 
   @Mutation(() => Message)
@@ -53,6 +54,4 @@ export class ConversationResolver {
   ): Promise<Message> {
     return this.sendMessageMutation.sendMessage(userId, conversationId, content);
   }
-
-
 }

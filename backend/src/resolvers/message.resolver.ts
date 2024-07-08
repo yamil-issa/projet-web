@@ -1,15 +1,18 @@
-import { Resolver, Query, Args, Int} from '@nestjs/graphql';
+import { Resolver, Query, Args, Int } from '@nestjs/graphql';
 import { Message } from '../entities/message.entity';
-import { messagesArray } from '../graphql/data';
+import { RedisConfig } from '../infrastructure/configuration/redis.config';
 
 @Resolver()
 export class MessageResolver {
-  private messages = messagesArray;
+  constructor(private readonly redisConfig: RedisConfig) {}
 
-  @Query(() => Message)
-  message(@Args('id', { type: () => Int }) id: number): Message | null{
-   // Fetch message by id
-   return this.messages.find((message) => message.id === id) || null;
+  @Query(() => Message, { nullable: true })
+  async message(@Args('id', { type: () => Int }) id: number): Promise<Message | null> {
+    const redisClient = this.redisConfig.getRedisClient();
+    
+    // Fetch message by id from Redis
+    const messageData = await redisClient.hget('messages', id.toString());
+    
+    return messageData ? JSON.parse(messageData) : null;
   }
-
 }

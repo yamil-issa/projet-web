@@ -1,7 +1,9 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { Worker, Job } from 'bullmq';
-import { conversationsArray, usersArray } from 'src/graphql/data';
 import { RedisConfig } from '../configuration/redis.config';
+import { Conversation } from 'src/entities/conversation.entity';
+import { Message } from 'src/entities/message.entity';
+
 @Injectable()
 export class BullConsumerProvider implements OnModuleInit, OnModuleDestroy {
   private worker: Worker;
@@ -11,18 +13,40 @@ export class BullConsumerProvider implements OnModuleInit, OnModuleDestroy {
   onModuleInit() {
     this.worker = new Worker('my-queue', async (job: Job) => {
       const { message, conversationId } = job.data;
-      const conversation = conversationsArray.find(conv => conv.id === conversationId);
+      const redisClient = this.redisConfig.getRedisClient();
 
-      if (conversation) {
-        const user = usersArray.find(u => u.id === message.authorId);
-        const newMessage = {
-          ...message,
-          author: user,
+      try {
+        const conversationData = await redisClient.hget('conversations', conversationId.toString());
+        if (!conversationData) {
+          throw new Error('Conversation not found');
+        }
+        const conversation: Conversation = JSON.parse(conversationData);
+
+        const authorData = await redisClient.hget('users', message.authorId.toString());
+        if (!authorData) {
+          throw new Error('Author not found');
+        }
+        const author = JSON.parse(authorData);
+
+        const newMessage: Message = {
+          id: message.id,
+          content: message.content,
+          createdAt: message.createdAt,
+          author: author,
         };
-        conversation.messages.push(newMessage);
-      }
 
-      console.log('Processed job:', job.data);
+        // Store new message in Redis
+        await redisClient.hset('messages', newMessage.id.toString(), JSON.stringify(newMessage));
+
+        // Update conversation with new message
+        conversation.messages.push(newMessage);
+        await redisClient.hset('conversations', conversation.id.toString(), JSON.stringify(conversation));
+
+        console.log('Processed job:', job.data);
+      } catch (error) {
+        console.error('Failed to process job:', job.id, error);
+        throw error;
+      }
     }, { connection: this.redisConfig.getRedisClient() });
 
     this.worker.on('completed', job => {

@@ -4,18 +4,21 @@ import { UserResolver } from '../resolvers/user.resolver';
 import { MessageResolver } from '../resolvers/message.resolver';
 import { ConversationResolver } from '../resolvers/conversation.resolver';
 import { BullMqModule } from '../infrastructure/bullmq/bullmq.module';
-import { SendMessageMutation } from '../mutations/message/sendMessage';
-import { CreateConversationMutation } from '../mutations/conversation/createConversation';
+import { RedisConfigModule } from 'src/infrastructure/configuration/redis.config.module';
+import { CreateUserMutation } from 'src/mutations/user/createUser';
+import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
+import { SendMessageMutation } from 'src/mutations/message/sendMessage';
 
 @Module({
-  imports: [BullMqModule],
+  imports: [BullMqModule, RedisConfigModule],
   providers: [
     HelloResolver,
     UserResolver,
     MessageResolver,
     ConversationResolver,
-    SendMessageMutation,
+    CreateUserMutation,
     CreateConversationMutation,
+    SendMessageMutation,
   ],
 })
 export class GraphqlModule {}

@@ -11,7 +11,7 @@ type User {
   username: String!
   email: String!
   password: String!
-  conversations: [Conversation!]!
+  conversationIds: [Int!]!
 }
 
 type Message {
@@ -23,22 +23,24 @@ type Message {
 
 type Conversation {
   id: Int!
-  participants: [User!]!
+  participantIds: [Int!]!
   messages: [Message!]!
   startedAt: String!
 }
 
 type Query {
   sayHello: HelloResult!
-  user(id: Int!): User!
+  user(id: Int!): User
+  users: [User!]!
   userConversations(id: Int!): [Conversation!]!
-  message(id: Int!): Message!
+  message(id: Int!): Message
   conversation(id: Int!): Conversation!
   conversations: [Conversation!]!
   conversationMessages(id: Int!): [Message!]!
 }
 
 type Mutation {
+  createUser(username: String!, email: String!, password: String!): User!
   createConversation(userId1: Int!, userId2: Int!): Conversation!
   sendMessage(userId: Int!, conversationId: Int!, content: String!): Message!
 }

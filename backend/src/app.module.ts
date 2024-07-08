@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { GraphqlModule } from './graphql/graphql.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { RedisConfigModule } from './infrastructure/configuration/redis.config.module';
 
 @Module({
   imports: [
@@ -14,7 +15,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       path: '/api',
     }),
     AppRoutingModule,
+    RedisConfigModule,
     GraphqlModule,
+   
   ],
 })
 export class AppModule {}

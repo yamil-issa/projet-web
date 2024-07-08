@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Args, Int, Mutation } from "@nestjs/graphql";
-import { Message } from "src/entities/message.entity";
-import { BullQueueProvider } from "src/infrastructure/bullmq/bullQueue.provider";
+import { Message } from "../../entities/message.entity";
+import { BullQueueProvider } from "../../infrastructure/bullmq/bullQueue.provider";
 import { MessageDTO } from "./message.dto";
-import { RedisConfig } from "src/infrastructure/configuration/redis.config";
-import { User } from "src/entities/user.entity";
-import { Conversation } from "src/entities/conversation.entity";
+import { RedisConfig } from "../../infrastructure/configuration/redis.config";
+import { User } from "../../entities/user.entity";
+import { Conversation } from "../../entities/conversation.entity";
 
 @Injectable()
 export class SendMessageMutation {

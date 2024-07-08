@@ -1,9 +1,9 @@
 import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
-import { Conversation } from 'src/entities/conversation.entity';
-import { Message } from 'src/entities/message.entity';
-import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
-import { SendMessageMutation } from 'src/mutations/message/sendMessage';
-import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
+import { Conversation } from '../entities/conversation.entity';
+import { Message } from '../entities/message.entity';
+import { CreateConversationMutation } from '../mutations/conversation/createConversation';
+import { SendMessageMutation } from '../mutations/message/sendMessage'
+import { RedisConfig } from '../infrastructure/configuration/redis.config';
 
 @Resolver()
 export class ConversationResolver {

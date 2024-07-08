@@ -1,7 +1,7 @@
 import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
-import { Conversation } from 'src/entities/conversation.entity';
-import { User } from 'src/entities/user.entity';
-import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
+import { Conversation } from '../../entities/conversation.entity';
+import { User } from '../../entities/user.entity';
+import { RedisConfig } from '../../infrastructure/configuration/redis.config';
 
 @Resolver()
 export class CreateConversationMutation {

@@ -9,6 +9,12 @@ async function bootstrap() {
   console.log('REDIS_HOST:', process.env.REDIS_HOST);
 
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+   // Configure CORS to allow all origins
+   app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+  await app.listen(4000);
 }
 bootstrap();

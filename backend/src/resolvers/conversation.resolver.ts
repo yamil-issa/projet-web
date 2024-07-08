@@ -2,8 +2,9 @@ import { Resolver, Query, Args, Int, Mutation } from '@nestjs/graphql';
 import { Conversation } from '../entities/conversation.entity';
 import { Message } from '../entities/message.entity';
 import { CreateConversationMutation } from '../mutations/conversation/createConversation';
-import { SendMessageMutation } from '../mutations/message/sendMessage'
+import { SendMessageMutation } from '../mutations/message/sendMessage';
 import { RedisConfig } from '../infrastructure/configuration/redis.config';
+import { User } from '../entities/user.entity';
 
 @Resolver()
 export class ConversationResolver {
@@ -17,18 +18,18 @@ export class ConversationResolver {
   async conversation(@Args('id', { type: () => Int }) id: number): Promise<Conversation | null> {
     const redisClient = this.redisConfig.getRedisClient();
     const conversation = await redisClient.hget('conversations', id.toString());
-    return conversation ? JSON.parse(conversation) : null;
+    if (!conversation) {
+      return null;
+    }
+    const parsedConversation = JSON.parse(conversation);
+    return parsedConversation;
   }
 
   @Query(() => [Conversation])
   async conversations(): Promise<Conversation[]> {
     const redisClient = this.redisConfig.getRedisClient();
     const conversations = await redisClient.hvals('conversations');
-    return conversations.map(conv => {
-      const parsedConversation = JSON.parse(conv);
-      parsedConversation.participantIds = parsedConversation.participantIds || [];
-      return parsedConversation;
-    });
+    return conversations.map(conv => JSON.parse(conv));
   }
 
   @Query(() => [Message])

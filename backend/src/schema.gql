@@ -23,7 +23,7 @@ type Message {
 
 type Conversation {
   id: Int!
-  participantIds: [Int!]!
+  participants: [User!]!
   messages: [Message!]!
   startedAt: String!
 }

@@ -1,7 +1,7 @@
 import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
-import { Conversation } from '../../entities/conversation.entity';
-import { User } from '../../entities/user.entity';
-import { RedisConfig } from '../../infrastructure/configuration/redis.config';
+import { Conversation } from 'src/entities/conversation.entity';
+import { User } from 'src/entities/user.entity';
+import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
 
 @Resolver()
 export class CreateConversationMutation {
@@ -12,31 +12,26 @@ export class CreateConversationMutation {
     @Args('userId1', { type: () => Int }) userId1: number,
     @Args('userId2', { type: () => Int }) userId2: number,
   ): Promise<Conversation> {
-    console.log('Creating conversation between users:', userId1, userId2);
     const redisClient = this.redisConfig.getRedisClient();
 
     // Fetch users from Redis
-    const notParsedUser1 = await redisClient.hget('users', userId1.toString());
-    const notParsedUser2 = await redisClient.hget('users', userId2.toString());
+    const user1Data = await redisClient.hget('users', userId1.toString());
+    const user2Data = await redisClient.hget('users', userId2.toString());
 
-    if (!notParsedUser1 || !notParsedUser2) {
+    if (!user1Data || !user2Data) {
       throw new Error('User not found');
     }
 
-    const user1: User = JSON.parse(notParsedUser1);
-    const user2: User = JSON.parse(notParsedUser2);
+    const user1: User = JSON.parse(user1Data);
+    const user2: User = JSON.parse(user2Data);
 
-    // Ensure conversationIds is an array
-    user1.conversationIds = user1.conversationIds || [];
-    user2.conversationIds = user2.conversationIds || [];
+    // Generate new conversation ID
+    const newConversationId = await redisClient.incr('conversation_id_counter');
 
-    // Retrieve all conversations
-    const conversations = await redisClient.hgetall('conversations');
-    const newConversationId = Object.keys(conversations).length + 1;
-
+    // Create new conversation
     const newConversation: Conversation = {
       id: newConversationId,
-      participantIds: [user1.id, user2.id],
+      participants: [user1, user2],
       messages: [],
       startedAt: new Date().toISOString(),
     };

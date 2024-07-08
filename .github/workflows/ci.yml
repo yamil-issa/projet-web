@@ -12,6 +12,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      docker:
+        image: docker:20.10.16
+        options: --privileged
+        ports:
+          - 4000:4000
+          - 6379:6379
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -45,10 +53,13 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
 
-    - name: Install Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+    - name: Start Docker Compose services
+      run: docker-compose up -d
+
+    - name: Wait for the backend to be ready
+      run: |
+        echo "Waiting for the backend service to start..."
+        sleep 15
 
     - name: Install Newman
       run: npm install -g newman

@@ -56,10 +56,13 @@ jobs:
     - name: Start Docker Compose services
       run: docker-compose up -d
 
+    - name: Check backend logs
+      run: docker-compose logs backend
+
     - name: Wait for the backend to be ready
       run: |
         echo "Waiting for the backend service to start..."
-        RETRIES=5
+        RETRIES=10
         until curl -sSf http://localhost:4000/api || [ $RETRIES -eq 0 ]; do
           echo "Waiting for backend to be ready, retries left: $RETRIES..."
           sleep 10

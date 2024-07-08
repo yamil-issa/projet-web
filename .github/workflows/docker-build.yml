@@ -34,10 +34,10 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build Docker image
-      run: docker-compose -f docker-compose.yml build backend
+      run: docker-compose -f docker-compose.yml build --no-cache backend
 
     - name: Tag Docker image
-      run: docker tag nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
+      run: docker tag $(docker images -q | head -n 1) ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
 
     - name: Push Docker image to Docker Hub
       run: |

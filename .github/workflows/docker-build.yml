@@ -44,3 +44,9 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
         docker tag ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
+
+    - name: Trigger Render Deployment
+      run: |
+        curl -X POST -d '{}' <YOUR_RENDER_WEBHOOK_URL>
+      env:
+        YOUR_RENDER_WEBHOOK_URL: ${{ secrets.RENDER_WEBHOOK_URL }}

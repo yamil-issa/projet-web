@@ -13,6 +13,7 @@ import { RedisConfigModule } from './infrastructure/configuration/redis.config.m
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       path: '/api',
+      introspection: true,
     }),
     AppRoutingModule,
     RedisConfigModule,

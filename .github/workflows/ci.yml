@@ -63,7 +63,7 @@ jobs:
       run: |
         echo "Waiting for the backend service to start..."
         RETRIES=10
-        until curl -sSf -X POST -H "Content-Type: application/json" --data '{"query":"{__schema { queryType { name } }}"}' http://localhost:4000/api || [ $RETRIES -eq 0 ]; do
+        until curl -sSf -X POST -H "Content-Type: application/json" --data '{"query":"{health { status }}"}' http://localhost:4000/api || [ $RETRIES -eq 0 ]; do
           echo "Waiting for backend to be ready, retries left: $RETRIES..."
           docker-compose logs backend
           sleep 10
@@ -73,7 +73,7 @@ jobs:
           echo "Backend service failed to start."
           docker-compose logs backend
           echo "Performing a more detailed check on the GraphQL endpoint..."
-          curl -v -X POST -H "Content-Type: application/json" --data '{"query":"{__schema { queryType { name } }}"}' http://localhost:4000/api
+          curl -v -X POST -H "Content-Type: application/json" --data '{"query":"{health { status }}"}' http://localhost:4000/api
           exit 1
         fi
 

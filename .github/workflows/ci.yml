@@ -72,6 +72,8 @@ jobs:
         if [ $RETRIES -eq 0 ]; then
           echo "Backend service failed to start."
           docker-compose logs backend
+          echo "Performing a more detailed check on the GraphQL endpoint..."
+          curl -v -X POST -H "Content-Type: application/json" --data '{"query":"{__schema { queryType { name } }}"}' http://localhost:4000/api
           exit 1
         fi
 

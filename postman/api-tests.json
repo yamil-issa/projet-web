@@ -15,13 +15,14 @@
 						"exec": [
 							"pm.test(\"Create User\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
+							"    console.log('Create User Response:', JSON.stringify(jsonData));\r",
 							"    pm.expect(jsonData).to.have.property('data');\r",
 							"    pm.expect(jsonData.data).to.have.property('createUser');\r",
 							"    pm.expect(jsonData.data.createUser).to.have.property('id');\r",
 							"    pm.expect(jsonData.data.createUser.username).to.eql('test');\r",
 							"    pm.expect(jsonData.data.createUser.email).to.eql('test@example.com');\r",
-							"});\r",
-							""
+							"    pm.environment.set('userId', jsonData.data.createUser.id);\r",
+							"});\r"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -59,12 +60,13 @@
 						"exec": [
 							"pm.test(\"Create Conversation\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
+							"    console.log('Create Conversation Response:', JSON.stringify(jsonData));\r",
 							"    pm.expect(jsonData).to.have.property('data');\r",
 							"    pm.expect(jsonData.data).to.have.property('createConversation');\r",
 							"    pm.expect(jsonData.data.createConversation).to.have.property('id');\r",
 							"    pm.expect(jsonData.data.createConversation.participants).to.be.an('array');\r",
-							"});\r",
-							""
+							"    pm.environment.set('conversationId', jsonData.data.createConversation.id);\r",
+							"});\r"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -82,7 +84,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { createConversation(userId1: 1, userId2: 2) { id participants { id } messages { id content createdAt author { id username email } } startedAt } }\"\r\n}\r\n",
+					"raw": "{\r\n  \"query\": \"mutation { createConversation(userId1: {{userId}}, userId2: 2) { id participants { id } messages { id content createdAt author { id username email } } startedAt } }\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -102,12 +104,12 @@
 						"exec": [
 							"pm.test(\"Send Message\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
+							"    console.log('Send Message Response:', JSON.stringify(jsonData));\r",
 							"    pm.expect(jsonData).to.have.property('data');\r",
 							"    pm.expect(jsonData.data).to.have.property('sendMessage');\r",
 							"    pm.expect(jsonData.data.sendMessage).to.have.property('id');\r",
 							"    pm.expect(jsonData.data.sendMessage.content).to.eql('Hello!');\r",
-							"});\r",
-							""
+							"});\r"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -125,7 +127,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation { sendMessage(userId: 1, conversationId: 2, content: \\\"Hello!\\\") { id content createdAt author { id username email } } }\"\r\n}\r\n",
+					"raw": "{\r\n  \"query\": \"mutation { sendMessage(userId: {{userId}}, conversationId: {{conversationId}}, content: \\\"Hello!\\\") { id content createdAt author { id username email } } }\"\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"

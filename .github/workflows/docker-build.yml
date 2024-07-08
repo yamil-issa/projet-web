@@ -33,12 +33,14 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image
+    - name: Build Docker image
       run: docker-compose -f docker-compose.yml build backend
+
+    - name: Tag Docker image
+      run: docker tag nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
 
     - name: Push Docker image to Docker Hub
       run: |
-        docker tag nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
-        docker tag nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
+        docker tag ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}

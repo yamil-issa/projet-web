@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build, Test, and Deploy
 
 on:
   push:
@@ -44,6 +44,17 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
         docker tag ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
+
+    - name: Install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install Newman
+      run: npm install -g newman
+
+    - name: Run Postman Tests
+      run: newman run postman/api-tests.json
 
     - name: Trigger Render Deployment
       run: |

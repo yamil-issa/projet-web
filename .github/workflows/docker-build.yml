@@ -3,10 +3,10 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -34,15 +34,11 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
+      run: docker-compose -f docker-compose.yml build backend
 
-    - name: Build and push Docker image with tag
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker tag nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
+        docker tag nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}

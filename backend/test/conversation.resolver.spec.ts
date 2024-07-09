@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConversationResolver } from '../src/resolvers/conversation.resolver';
 import { Conversation } from '../src/entities/conversation.entity';
+import { User } from '../src/entities/user.entity';
 import { RedisConfig } from '../src/infrastructure/configuration/redis.config';
 import { CreateConversationMutation } from '../src/mutations/conversation/createConversation';
 import { SendMessageMutation } from '../src/mutations/message/sendMessage';
@@ -10,9 +11,15 @@ describe('ConversationResolver', () => {
   let resolver: ConversationResolver;
   let redisConfig: RedisConfig;
 
+  const usersArray: User[] = [
+    { id: 1, username: 'User1', email: 'user1@example.com', password: 'pass1', conversationIds: [] },
+    { id: 2, username: 'User2', email: 'user2@example.com', password: 'pass2', conversationIds: [] },
+    { id: 3, username: 'User3', email: 'user3@example.com', password: 'pass3', conversationIds: [] },
+  ];
+
   const conversationsArray: Conversation[] = [
-    { id: 1, participantIds: [1, 2], messages: [], startedAt: '2024-07-08T11:30:00.000Z' },
-    { id: 2, participantIds: [2, 3], messages: [], startedAt: '2024-07-08T12:30:00.000Z' },
+    { id: 1, participants: [usersArray[0], usersArray[1]], messages: [], startedAt: '2024-07-08T11:30:00.000Z' },
+    { id: 2, participants: [usersArray[1], usersArray[2]], messages: [], startedAt: '2024-07-08T12:30:00.000Z' },
   ];
 
   beforeEach(async () => {
@@ -29,6 +36,10 @@ describe('ConversationResolver', () => {
                 if (key === 'conversations') {
                   const conversation = conversationsArray.find((conv) => conv.id === Number(id));
                   return conversation ? JSON.stringify(conversation) : null;
+                }
+                if (key === 'users') {
+                  const user = usersArray.find((usr) => usr.id === Number(id));
+                  return user ? JSON.stringify(user) : null;
                 }
                 return null;
               }),

@@ -37,9 +37,12 @@ export class SendMessageMutation {
       throw new Error('Conversation not found');
     }
     const parsedConversation: Conversation = JSON.parse(conversation);
-    const messages = await redisClient.hgetall('messages');
+
+    // Generate new message ID
+    const messages = await redisClient.hgetall(`conversation:${conversationId}:messages`);
     const newMessageId = Object.keys(messages).length + 1;
 
+    // Create new message
     const newMessage: Message = {
       id: newMessageId,
       content: content,
@@ -47,19 +50,20 @@ export class SendMessageMutation {
       author: parsedUser,
     };
 
-    const newMessageDTO: MessageDTO = {
-        id: newMessage.id,
-        content: newMessage.content,
-        createdAt: newMessage.createdAt,
-        authorId: parsedUser.id,
-      };
-      
+    // Save the new message in Redis
+    await redisClient.hset(`conversation:${conversationId}:messages`, newMessageId.toString(), JSON.stringify(newMessage));
+
     // Add message to the queue
+    const newMessageDTO: MessageDTO = {
+      id: newMessage.id,
+      content: newMessage.content,
+      createdAt: newMessage.createdAt,
+      authorId: parsedUser.id,
+    };
     await this.bullQueueProvider.addJob({
-        message: newMessageDTO,
-        conversationId: conversationId
+      message: newMessageDTO,
+      conversationId: conversationId,
     });
-    
 
     return newMessage;
   }

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useQuery, gql } from '@apollo/client';
+import { AuthContext } from '../context/AuthContext';
 
-const GET_CONVERSATIONS = gql`
-  query GetConversations {
-    conversations {
+const GET_USER_CONVERSATIONS = gql`
+  query GetUserConversations($id: Int!) {
+    userConversations(id: $id) {
       id
       participants {
         id
@@ -48,17 +49,33 @@ interface ConversationsListProps {
 }
 
 const ConversationsList: React.FC<ConversationsListProps> = ({ onSelectConversation }) => {
-  const { loading, error, data } = useQuery(GET_CONVERSATIONS);
+  const { user } = useContext(AuthContext);
+
+  const { loading, error, data } = useQuery(GET_USER_CONVERSATIONS, {
+    variables: { id: user?.sub },
+    context: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    }
+  });
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
   useEffect(() => {
-    if (data && data.conversations) {
-      setConversations(data.conversations);
+    if (data && data.userConversations) {
+      setConversations(data.userConversations);
     }
   }, [data]);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
+
+  if (error) {
+    console.error('Error loading conversations:', error);
+    return <p>Error loading conversations: {error.message}</p>;
+  }
+
+  if (!conversations.length) return <p>No conversations found.</p>;
 
   return (
     <div className="conversations-list">
@@ -78,7 +95,9 @@ const ConversationsList: React.FC<ConversationsListProps> = ({ onSelectConversat
                 : 'No messages yet'}
             </div>
           </div>
-          <div className="conversation-time">{new Date(conversation.startedAt).toLocaleString()}</div>
+          <div className="conversation-time">
+            {new Date(conversation.startedAt).toLocaleString()}
+          </div>
         </div>
       ))}
     </div>

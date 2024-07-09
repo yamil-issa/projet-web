@@ -3,16 +3,14 @@ import { gql, useQuery } from '@apollo/client';
 
 const GET_MESSAGES = gql`
   query GetMessages($conversationId: Int!) {
-    conversation(id: $conversationId) {
-      messages {
+    conversationMessages(id: $conversationId) {
+      id
+      content
+      createdAt
+      author {
         id
-        content
-        createdAt
-        author {
-          id
-          username
-          email
-        }
+        username
+        email
       }
     }
   }
@@ -34,19 +32,29 @@ interface MessagesListProps {
 }
 
 const MessagesList: React.FC<MessagesListProps> = ({ conversationId }) => {
-  const { loading, error, data } = useQuery<{ conversation: { messages: Message[] } }>(GET_MESSAGES, {
+  const { loading, error, data } = useQuery<{ conversationMessages: Message[] }>(GET_MESSAGES, {
     variables: { conversationId },
+    context: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    }
   });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
+  // Make a copy of the messages array and sort it by date, from the oldest to the newest
+  const sortedMessages = [...(data?.conversationMessages || [])].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+
   return (
     <div className="messages-list">
-      {data?.conversation.messages.map((message) => (
+      {sortedMessages.map((message) => (
         <div key={message.id} className="message">
           <div className="message-text">{message.content}</div>
-          <div className="message-time">{message.createdAt}</div>
+          <div className="message-time">{new Date(message.createdAt).toLocaleString()}</div>
         </div>
       ))}
     </div>

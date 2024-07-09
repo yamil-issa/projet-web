@@ -81,7 +81,7 @@ jobs:
       run: npm install -g newman
 
     - name: Run Postman Tests
-      run: newman run postman/api-tests.json --verbose
+      run: newman run postman/api-tests.json -e postman/postman_environment.json --verbose
 
     - name: Trigger Render Deployment
       run: |

@@ -5,6 +5,8 @@ import { CreateConversationMutation } from '../mutations/conversation/createConv
 import { SendMessageMutation } from '../mutations/message/sendMessage';
 import { RedisConfig } from '../infrastructure/configuration/redis.config';
 import { User } from '../entities/user.entity';
+import { JwtAuthGuard } from 'src/infrastructure/auth/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver()
 export class ConversationResolver {
@@ -14,6 +16,7 @@ export class ConversationResolver {
     private readonly sendMessageMutation: SendMessageMutation,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => Conversation)
   async conversation(@Args('id', { type: () => Int }) id: number): Promise<Conversation | null> {
     const redisClient = this.redisConfig.getRedisClient();
@@ -25,6 +28,7 @@ export class ConversationResolver {
     return parsedConversation;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => [Conversation])
   async conversations(): Promise<Conversation[]> {
     const redisClient = this.redisConfig.getRedisClient();
@@ -32,6 +36,7 @@ export class ConversationResolver {
     return conversations.map(conv => JSON.parse(conv));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => [Message])
   async conversationMessages(@Args('id', { type: () => Int }) id: number): Promise<Message[]> {
     const redisClient = this.redisConfig.getRedisClient();
@@ -39,6 +44,7 @@ export class ConversationResolver {
     return messages.map(msg => JSON.parse(msg));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Conversation)
   createConversation(
     @Args('userId1', { type: () => Int }) userId1: number,
@@ -47,6 +53,7 @@ export class ConversationResolver {
     return this.createConversationMutation.createConversation(userId1, userId2);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Message)
   sendMessage(
     @Args('userId', { type: () => Int }) userId: number,

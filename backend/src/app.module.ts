@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppRoutingModule } from './app.routing-module';
+import { Request, Response } from 'express';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { GraphqlModule } from './graphql/graphql.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RedisConfigModule } from './infrastructure/configuration/redis.config.module';
+import { AuthModule } from './infrastructure/auth/auth.module';
+import { AppRoutingModule } from './app.routing-module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -13,12 +16,16 @@ import { RedisConfigModule } from './infrastructure/configuration/redis.config.m
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       path: '/api',
-      introspection: true,
+      context: ({ req, res }: { req: Request, res: Response }) => ({ req, res }), 
     }),
-    AppRoutingModule,
+    AuthModule,
     RedisConfigModule,
+    AppRoutingModule,
     GraphqlModule,
-   
+    JwtModule.register({
+      secret: process.env.JWT_SECRET_KEY,
+      signOptions: { expiresIn: '60m' },
+    }),
   ],
 })
 export class AppModule {}

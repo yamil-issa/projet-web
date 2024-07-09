@@ -1,0 +1,140 @@
+{
+	"info": {
+	  "_postman_id": "cff7189d-c4cf-411f-8e90-a0c1e26cddf7",
+	  "name": "projet-web api tests",
+	  "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+	  "_exporter_id": "27157939"
+	},
+	"item": [
+	  {
+		"name": "graphql query - create a user",
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Create User\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    console.log('Create User Response:', JSON.stringify(jsonData));",
+				"    pm.expect(jsonData).to.have.property('data');",
+				"    pm.expect(jsonData.data).to.have.property('createUser');",
+				"    pm.expect(jsonData.data.createUser).to.have.property('id');",
+				"    pm.expect(jsonData.data.createUser.username).to.eql('test');",
+				"    pm.expect(jsonData.data.createUser.email).to.eql('test@example.com');",
+				"    pm.environment.set('userId', jsonData.data.createUser.id);",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		],
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"query\": \"mutation CreateUser($username: String!, $email: String!, $password: String!) { createUser(username: $username, email: $email, password: $password) { id username email password conversationIds } }\",\n  \"variables\": {\n    \"username\": \"test\",\n    \"email\": \"test@example.com\",\n    \"password\": \"123\"\n  }\n}\n",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": "http://localhost:4000/api"
+		},
+		"response": []
+	  },
+	  {
+		"name": "graphql query - create a conversation",
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Create Conversation\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    console.log('Create Conversation Response:', JSON.stringify(jsonData));",
+				"    pm.expect(jsonData).to.have.property('data');",
+				"    pm.expect(jsonData.data).to.have.property('createConversation');",
+				"    pm.expect(jsonData.data.createConversation).to.have.property('id');",
+				"    pm.expect(jsonData.data.createConversation.participants).to.be.an('array');",
+				"    pm.environment.set('conversationId', jsonData.data.createConversation.id);",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		],
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"query\": \"mutation CreateConversation($userId1: ID!, $userId2: ID!) { createConversation(userId1: $userId1, userId2: $userId2) { id participants { id } messages { id content createdAt author { id username email } } startedAt } }\",\n  \"variables\": {\n    \"userId1\": \"{{userId}}\",\n    \"userId2\": \"2\"\n  }\n}\n",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": "http://localhost:4000/api"
+		},
+		"response": []
+	  },
+	  {
+		"name": "graphql query - send message",
+		"event": [
+		  {
+			"listen": "test",
+			"script": {
+			  "exec": [
+				"pm.test(\"Send Message\", function () {",
+				"    var jsonData = pm.response.json();",
+				"    console.log('Send Message Response:', JSON.stringify(jsonData));",
+				"    pm.expect(jsonData).to.have.property('data');",
+				"    pm.expect(jsonData.data).to.have.property('sendMessage');",
+				"    pm.expect(jsonData.data.sendMessage).to.have.property('id');",
+				"    pm.expect(jsonData.data.sendMessage.content).to.eql('Hello!');",
+				"});"
+			  ],
+			  "type": "text/javascript"
+			}
+		  }
+		],
+		"request": {
+		  "method": "POST",
+		  "header": [
+			{
+			  "key": "Content-Type",
+			  "value": "application/json",
+			  "type": "text"
+			}
+		  ],
+		  "body": {
+			"mode": "raw",
+			"raw": "{\n  \"query\": \"mutation SendMessage($userId: ID!, $conversationId: ID!, $content: String!) { sendMessage(userId: $userId, conversationId: $conversationId, content: $content) { id content createdAt author { id username email } } }\",\n  \"variables\": {\n    \"userId\": \"{{userId}}\",\n    \"conversationId\": \"{{conversationId}}\",\n    \"content\": \"Hello!\"\n  }\n}\n",
+			"options": {
+			  "raw": {
+				"language": "json"
+			  }
+			}
+		  },
+		  "url": "http://localhost:4000/api"
+		},
+		"response": []
+	  }
+	]
+  }
+  

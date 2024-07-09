@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import * as passport from 'passport';
+import { UnauthorizedExceptionFilter } from './http-exception.filter';
 
 async function bootstrap() {
   dotenv.config();
@@ -9,6 +11,8 @@ async function bootstrap() {
   console.log('REDIS_HOST:', process.env.REDIS_HOST);
 
   const app = await NestFactory.create(AppModule);
+  app.use(passport.initialize());
+  app.useGlobalFilters(new UnauthorizedExceptionFilter()); // Apply the exception filter globally
    // Configure CORS to allow all origins
    app.enableCors({
     origin: '*',

@@ -1,6 +1,8 @@
+import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Int, Args, Mutation } from '@nestjs/graphql';
 import { Conversation } from 'src/entities/conversation.entity';
 import { User } from 'src/entities/user.entity';
+import { JwtAuthGuard } from 'src/infrastructure/auth/jwt-auth.guard';
 import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
 import { CreateUserMutation } from 'src/mutations/user/createUser';
 
@@ -25,6 +27,7 @@ export class UserResolver {
     return users.map(user => JSON.parse(user));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Query(() => [Conversation])
   async userConversations(@Args('id', { type: () => Int }) id: number): Promise<Conversation[]> {
     const redisClient = this.redisConfig.getRedisClient();

@@ -8,9 +8,10 @@ import { RedisConfigModule } from 'src/infrastructure/configuration/redis.config
 import { CreateUserMutation } from 'src/mutations/user/createUser';
 import { CreateConversationMutation } from 'src/mutations/conversation/createConversation';
 import { SendMessageMutation } from 'src/mutations/message/sendMessage';
+import { AuthModule } from 'src/infrastructure/auth/auth.module';
 
 @Module({
-  imports: [BullMqModule, RedisConfigModule],
+  imports: [BullMqModule, RedisConfigModule, AuthModule],
   providers: [
     HelloResolver,
     UserResolver,

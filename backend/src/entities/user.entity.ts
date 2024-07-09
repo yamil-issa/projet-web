@@ -14,6 +14,9 @@ export class User {
   @Field()
   password: string;
 
+  @Field({ nullable: true })
+  token?: string;
+
   @Field(() => [Int], { defaultValue: [] })
   conversationIds: number[];
 }

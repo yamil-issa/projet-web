@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UseGuards } from "@nestjs/common";
 import { Args, Int, Mutation } from "@nestjs/graphql";
 import { Message } from "../../entities/message.entity";
 import { BullQueueProvider } from "../../infrastructure/bullmq/bullQueue.provider";
@@ -6,6 +6,7 @@ import { MessageDTO } from "./message.dto";
 import { RedisConfig } from "../../infrastructure/configuration/redis.config";
 import { User } from "../../entities/user.entity";
 import { Conversation } from "../../entities/conversation.entity";
+import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 
 @Injectable()
 export class SendMessageMutation {
@@ -14,6 +15,7 @@ export class SendMessageMutation {
     private readonly bullQueueProvider: BullQueueProvider,
     private readonly redisConfig: RedisConfig) {}
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Message)
   async sendMessage(
     @Args('userId', { type: () => Int }) userId: number,

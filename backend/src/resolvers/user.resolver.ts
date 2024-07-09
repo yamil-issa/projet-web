@@ -1,16 +1,19 @@
-import { UseGuards } from '@nestjs/common';
-import { Resolver, Query, Int, Args, Mutation } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
+import { User } from '../entities/user.entity';
+import { AuthService } from '../auth/auth.service';
+import { RedisConfig } from '../infrastructure/configuration/redis.config';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
+import { CreateUserInput, LoginUserInput } from '../entities/user.input';
 import { Conversation } from 'src/entities/conversation.entity';
-import { User } from 'src/entities/user.entity';
-import { JwtAuthGuard } from 'src/infrastructure/auth/jwt-auth.guard';
-import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
-import { CreateUserMutation } from 'src/mutations/user/createUser';
+import { Request } from 'express';
+
 
 @Resolver()
 export class UserResolver {
   constructor(
     private readonly redisConfig: RedisConfig,
-    private readonly createUserMutation: CreateUserMutation,
+    private readonly authService: AuthService,
   ) {}
 
   @Query(() => User, { nullable: true })
@@ -29,7 +32,17 @@ export class UserResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [Conversation])
-  async userConversations(@Args('id', { type: () => Int }) id: number): Promise<Conversation[]> {
+  async userConversations(
+    @Args('id', { type: () => Int }) id: number,
+    @Context() context: { req: Request },
+  ): Promise<Conversation[]> {
+    const req = context.req;
+    const user = (req as any).user as User;
+
+    if (user.id !== id) {
+      throw new UnauthorizedException('You can only access your own conversations');
+    }
+
     const redisClient = this.redisConfig.getRedisClient();
     const userData = await redisClient.hget('users', id.toString());
 
@@ -37,8 +50,8 @@ export class UserResolver {
       return [];
     }
 
-    const user: User = JSON.parse(userData);
-    const conversations = await Promise.all(user.conversationIds.map(async (convId) => {
+    const userEntity: User = JSON.parse(userData);
+    const conversations = await Promise.all(userEntity.conversationIds.map(async (convId) => {
       const convData = await redisClient.hget('conversations', convId.toString());
       return convData ? JSON.parse(convData) : null;
     }));
@@ -46,12 +59,20 @@ export class UserResolver {
     return conversations.filter(conv => conv !== null);
   }
 
+
   @Mutation(() => User)
-  createUser(
-    @Args('username', { type: () => String }) username: string,
-    @Args('email', { type: () => String }) email: string,
-    @Args('password', { type: () => String }) password: string,
+  async createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
-    return this.createUserMutation.createUser(username, email, password);
+    const { username, email, password } = createUserInput;
+    return this.authService.signup({ username, email, password });
+  }
+
+  @Mutation(() => User)
+  async login(
+    @Args('loginUserInput') loginUserInput: LoginUserInput,
+  ): Promise<User> {
+    const { email, password } = loginUserInput;
+    return this.authService.login({ email, password });
   }
 }

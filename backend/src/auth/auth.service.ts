@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { RedisConfig } from 'src/infrastructure/configuration/redis.config';
-import { User } from 'src/entities/user.entity';
+import { RedisConfig } from '../infrastructure/configuration/redis.config';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,17 +23,31 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
-    const payload = { email: user.email, sub: user.id };
+  async login(user: any) {
+    const redisClient = this.redisConfig.getRedisClient();
+    const users = await redisClient.hvals('users');
+    const foundUser = users.map(u => JSON.parse(u)).find(u => u.email === user.email);
+
+    if (!foundUser) {
+      throw new Error('User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(user.password, foundUser.password);
+    if (!isPasswordValid) {
+      throw new Error('Invalid password');
+    }
+
+    const payload = { email: foundUser.email, sub: foundUser.id };
     const token = this.jwtService.sign(payload);
-    return {
-      ...user,
-      token,
-    };
+
+    foundUser.token = token;
+
+    await redisClient.hset('users', foundUser.id.toString(), JSON.stringify(foundUser));
+
+    return foundUser;
   }
 
   async signup(user: any) {
-    console.log('Signup method called');
     const redisClient = this.redisConfig.getRedisClient();
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const users = await redisClient.hgetall('users');
@@ -54,11 +68,8 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
     newUser.token = token;
 
-    console.log('Generated token:', token);
-
     await redisClient.hset('users', newUser.id.toString(), JSON.stringify(newUser));
 
-    console.log('New user created:', newUser);
     return newUser;
   }
 }

@@ -35,13 +35,19 @@ type Query {
   users: [User!]!
   userConversations(id: Int!): [Conversation!]!
   message(id: Int!): Message
-  conversation(id: Int!): Conversation!
+  conversation(id: Int!): Conversation
   conversations: [Conversation!]!
   conversationMessages(id: Int!): [Message!]!
 }
 
 type Mutation {
   createUser(username: String!, email: String!, password: String!): User!
+  login(loginUserInput: LoginUserInput!): User!
   createConversation(userId1: Int!, userId2: Int!): Conversation!
   sendMessage(userId: Int!, conversationId: Int!, content: String!): Message!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
 }

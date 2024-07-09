@@ -4,8 +4,7 @@ import { Message } from '../entities/message.entity';
 import { CreateConversationMutation } from '../mutations/conversation/createConversation';
 import { SendMessageMutation } from '../mutations/message/sendMessage';
 import { RedisConfig } from '../infrastructure/configuration/redis.config';
-import { User } from '../entities/user.entity';
-import { JwtAuthGuard } from 'src/infrastructure/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
 
 @Resolver()
@@ -17,7 +16,7 @@ export class ConversationResolver {
   ) {}
 
   @UseGuards(JwtAuthGuard)
-  @Query(() => Conversation)
+  @Query(() => Conversation, { nullable: true })
   async conversation(@Args('id', { type: () => Int }) id: number): Promise<Conversation | null> {
     const redisClient = this.redisConfig.getRedisClient();
     const conversation = await redisClient.hget('conversations', id.toString());

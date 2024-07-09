@@ -19,6 +19,7 @@ services:
     environment:
       - NODE_ENV=production
       - REDIS_HOST=redis
+      - JWT_SECRET=0bee2b7d18252243ec707612a915fb621923c88e67204b9771bd78f4517471df30462bd8320895515f5358d82edac349c46253121ec6dc179d13feea3f1c3de9
     networks:
       - app-network
 

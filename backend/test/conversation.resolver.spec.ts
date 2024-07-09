@@ -6,6 +6,9 @@ import { RedisConfig } from '../src/infrastructure/configuration/redis.config';
 import { CreateConversationMutation } from '../src/mutations/conversation/createConversation';
 import { SendMessageMutation } from '../src/mutations/message/sendMessage';
 import { BullQueueProvider } from '../src/infrastructure/bullmq/bullQueue.provider';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 describe('ConversationResolver', () => {
   let resolver: ConversationResolver;
@@ -63,6 +66,25 @@ describe('ConversationResolver', () => {
 
     resolver = module.get<ConversationResolver>(ConversationResolver);
     redisConfig = module.get<RedisConfig>(RedisConfig);
+
+    // Mock the GqlExecutionContext.create to simulate the context in the test
+    jest.spyOn(GqlExecutionContext, 'create').mockImplementation((context: ExecutionContext) => {
+      const gqlContext = {
+        getContext: () => ({
+          req: context.switchToHttp().getRequest(),
+        }),
+      } as GqlExecutionContext;
+      return gqlContext;
+    });
+
+    // Mock the canActivate method of JwtAuthGuard
+    jest.spyOn(JwtAuthGuard.prototype, 'canActivate').mockImplementation((context: ExecutionContext) => {
+      const req = GqlExecutionContext.create(context).getContext().req;
+      if (!req.headers.authorization) {
+        throw new UnauthorizedException();
+      }
+      return true;
+    });
   });
 
   it('should be defined', () => {
@@ -70,17 +92,29 @@ describe('ConversationResolver', () => {
   });
 
   describe('conversation', () => {
-    it('should return a conversation by id', async () => {
+    it('should return a conversation by id when authorized', async () => {
       const conversationId = 1;
       const expectedConversation = conversationsArray.find((conv) => conv.id === conversationId) as Conversation;
+
+      // Mock the request with authorization header
+      const mockContext = {
+        req: { headers: { authorization: 'Bearer valid-token' } },
+      };
+      jest.spyOn(GqlExecutionContext.prototype, 'getContext').mockImplementation(() => mockContext);
 
       const result = await resolver.conversation(conversationId);
 
       expect(result).toEqual(expectedConversation);
     });
 
-    it('should return null if conversation id does not exist', async () => {
+    it('should return null if conversation id does not exist when authorized', async () => {
       const conversationId = 3;
+
+      // Mock the request with authorization header
+      const mockContext = {
+        req: { headers: { authorization: 'Bearer valid-token' } },
+      };
+      jest.spyOn(GqlExecutionContext.prototype, 'getContext').mockImplementation(() => mockContext);
 
       const result = await resolver.conversation(conversationId);
 
@@ -89,7 +123,13 @@ describe('ConversationResolver', () => {
   });
 
   describe('conversations', () => {
-    it('should return all conversations', async () => {
+    it('should return all conversations when authorized', async () => {
+      // Mock the request with authorization header
+      const mockContext = {
+        req: { headers: { authorization: 'Bearer valid-token' } },
+      };
+      jest.spyOn(GqlExecutionContext.prototype, 'getContext').mockImplementation(() => mockContext);
+
       const result = await resolver.conversations();
 
       expect(result).toEqual(conversationsArray);

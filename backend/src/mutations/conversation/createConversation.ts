@@ -2,11 +2,14 @@ import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
 import { Conversation } from '../../entities/conversation.entity';
 import { User } from '../../entities/user.entity';
 import { RedisConfig } from '../../infrastructure/configuration/redis.config';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver()
 export class CreateConversationMutation {
   constructor(private readonly redisConfig: RedisConfig) {}
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Conversation)
   async createConversation(
     @Args('userId1', { type: () => Int }) userId1: number,

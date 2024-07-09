@@ -1,11 +1,11 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { Request, Response } from 'express';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { GraphqlModule } from './graphql/graphql.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { RedisConfigModule } from './infrastructure/configuration/redis.config.module';
-import { AuthModule } from './infrastructure/auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 import { AppRoutingModule } from './app.routing-module';
 import { JwtModule } from '@nestjs/jwt';
 
@@ -23,7 +23,7 @@ import { JwtModule } from '@nestjs/jwt';
     AppRoutingModule,
     GraphqlModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET_KEY,
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60m' },
     }),
   ],

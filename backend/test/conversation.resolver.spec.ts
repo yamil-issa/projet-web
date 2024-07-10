@@ -9,6 +9,7 @@ import { BullQueueProvider } from '../src/infrastructure/bullmq/bullQueue.provid
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { MessagesGateway } from '../src/infrastructure/gateways/messages.gateway';
 
 describe('ConversationResolver', () => {
   let resolver: ConversationResolver;
@@ -59,6 +60,12 @@ describe('ConversationResolver', () => {
           provide: BullQueueProvider,
           useValue: {
             addJob: jest.fn(),
+          },
+        },
+        {
+          provide: MessagesGateway,
+          useValue: {
+            sendMessageToConversation: jest.fn(),
           },
         },
       ],

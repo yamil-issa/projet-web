@@ -11,7 +11,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { MessagesGateway } from 'src/infrastructure/gateways/messages.gateway';
 
 @Module({
-  imports: [BullMqModule, RedisConfigModule, AuthModule, forwardRef(() => GraphqlModule)],
+  imports: [BullMqModule, RedisConfigModule, AuthModule, forwardRef(() => GraphqlModule),],
   providers: [
     HelloResolver,
     UserResolver,

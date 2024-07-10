@@ -42,7 +42,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation CreateUser($username: String!, $email: String!, $password: String!) { createUser(username: $username, email: $email, password: $password) { id username email password conversationIds } }\",\r\n  \"variables\": {\r\n    \"username\": \"test1\",\r\n    \"email\": \"test1@example.com\",\r\n    \"password\": \"123\"\r\n  }\r\n}\r\n",
+					"raw": "{\r\n  \"query\": \"mutation CreateUser($createUserInput: CreateUserInput!) { createUser(createUserInput: $createUserInput) { id username email password token conversationIds } }\",\r\n  \"variables\": {\r\n    \"createUserInput\": {\r\n      \"username\": \"test1\",\r\n      \"email\": \"test1@example.com\",\r\n      \"password\": \"123\"\r\n    }\r\n  }\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -88,7 +88,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"query\": \"mutation CreateUser($username: String!, $email: String!, $password: String!) { createUser(username: $username, email: $email, password: $password) { id username email password conversationIds } }\",\r\n  \"variables\": {\r\n    \"username\": \"test2\",\r\n    \"email\": \"test2@example.com\",\r\n    \"password\": \"123\"\r\n  }\r\n}\r\n",
+					"raw": "{\r\n  \"query\": \"mutation CreateUser($createUserInput: CreateUserInput!) { createUser(createUserInput: $createUserInput) { id username email password token conversationIds } }\",\r\n  \"variables\": {\r\n    \"createUserInput\": {\r\n      \"username\": \"test2\",\r\n      \"email\": \"test2@example.com\",\r\n      \"password\": \"123\"\r\n    }\r\n  }\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"

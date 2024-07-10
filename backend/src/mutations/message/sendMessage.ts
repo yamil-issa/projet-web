@@ -7,7 +7,7 @@ import { RedisConfig } from "../../infrastructure/configuration/redis.config";
 import { User } from "../../entities/user.entity";
 import { Conversation } from "../../entities/conversation.entity";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
-import { MessagesGateway } from "src/infrastructure/gateways/messages.gateway";
+import { MessagesGateway } from "../../infrastructure/gateways/messages.gateway";
 
 @Injectable()
 export class SendMessageMutation {

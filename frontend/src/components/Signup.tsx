@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Signup: React.FC = () => {
@@ -52,12 +52,13 @@ const Signup: React.FC = () => {
         <Button type="submit">Signup</Button>
       </SignupForm>
       <p>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <StyledLink to="/login">Login</StyledLink>
       </p>
     </SignupContainer>
   );
 };
 
+// component style
 const SignupContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -114,6 +115,15 @@ const Button = styled.button`
 
   &:hover {
     background-color: #1482b6;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  color: #19a3e8;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 

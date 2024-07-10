@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 
@@ -53,7 +53,7 @@ const Login: React.FC = () => {
         <Button type="submit">Login</Button>
       </LoginForm>
       <p>
-        Don't have an account? <a href="/signup">Signup</a>
+        Don't have an account? <StyledLink to="/signup">Signup</StyledLink>
       </p>
     </LoginContainer>
   );
@@ -116,6 +116,15 @@ const Button = styled.button`
 
   &:hover {
     background-color: #1482b6;
+  }
+`;
+
+const StyledLink = styled(Link)`
+  color: #19a3e8;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
   }
 `;
 

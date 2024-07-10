@@ -118,6 +118,10 @@ jobs:
     - name: Run Postman Tests
       run: newman run backend/postman/api-tests.json -e backend/postman/postman_environment.json --verbose
 
-    - name: Trigger Render Deployment
+    - name: Trigger Render Deployment for the backend
       run: |
-        curl -X POST -d '{}' ${{ secrets.RENDER_WEBHOOK_URL }}
+        curl -X POST -d '{}' ${{ secrets.BACKEND_RENDER_WEBHOOK_URL }}
+
+    - name: Trigger Render Deployment for the frontend
+      run: |
+        curl -X POST -d '{}' ${{ secrets.FRONTEND_RENDER_WEBHOOK_URL }}

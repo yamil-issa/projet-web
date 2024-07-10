@@ -35,6 +35,29 @@ const CREATE_CONVERSATION = gql`
   }
 `;
 
+const GET_USER_CONVERSATIONS = gql`
+  query GetUserConversations($id: Int!) {
+    userConversations(id: $id) {
+      id
+      participants {
+        id
+        username
+      }
+      messages {
+        id
+        content
+        createdAt
+        author {
+          id
+          username
+          email
+        }
+      }
+      startedAt
+    }
+  }
+`;
+
 const CreateConversationForm: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -48,6 +71,17 @@ const CreateConversationForm: React.FC = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     },
+    refetchQueries: [
+      {
+        query: GET_USER_CONVERSATIONS,
+        variables: { id: user?.sub },
+        context: {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        },
+      },
+    ],
   });
 
   useEffect(() => {

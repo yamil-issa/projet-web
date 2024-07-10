@@ -12,12 +12,10 @@ services:
     container_name: nestjs-app
     links:
       - redis
-      - postgres
     ports:
       - "4000:4000"
     depends_on:
       - redis
-      - postgres
     environment:
       - NODE_ENV=production
       - REDIS_HOST=redis
@@ -36,20 +34,5 @@ services:
     networks:
       - app-network
 
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: projet-web
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
 volumes:
   redis-data:
-  postgres-data:

@@ -18,6 +18,7 @@ jobs:
         options: --privileged
         ports:
           - 4000:4000
+          - 3000:3000
           - 6379:6379
 
     steps:
@@ -52,6 +53,18 @@ jobs:
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest
         docker tag ${{ secrets.DOCKER_USERNAME }}/nestjs-app:latest ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/nestjs-app:${{ github.sha }}
+
+    - name: Build frontend Docker image
+      run: docker-compose -f docker-compose.yml build --no-cache frontend
+
+    - name: Tag frontend Docker image
+      run: docker tag $(docker images -q | grep react-app | head -n 1) ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+
+    - name: Push frontend Docker image to Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+        docker tag ${{ secrets.DOCKER_USERNAME }}/react-app:latest ${{ secrets.DOCKER_USERNAME }}/react-app:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/react-app:${{ github.sha }}
 
     - name: Start Docker Compose services
       run: docker-compose up -d

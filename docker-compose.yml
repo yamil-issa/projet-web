@@ -23,6 +23,23 @@ services:
     networks:
       - app-network
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: react-app
+    links:
+    - backend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://nestjs-app:4000/api
+      - REACT_APP_SOCKET_URL=http://nestjs-app:4000
+    networks:
+      - app-network
+
+
   redis:
     image: redis:latest
     container_name: redis

@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { ApolloProvider, InMemoryCache, ApolloClient } from '@apollo/client';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/api',
+  uri: process.env.REACT_APP_GRAPHQL_URL || 'https://nestjs-app-latest.onrender.com/api',
   cache: new InMemoryCache()
 });
 

@@ -36,8 +36,8 @@ services:
     depends_on:
       - backend
     environment:
-      - REACT_APP_API_URL=http://nestjs-app:4000/api
-      - REACT_APP_SOCKET_URL=http://nestjs-app:4000
+      - REACT_APP_API_URL=https://nestjs-app-latest.onrender.com/api
+      - REACT_APP_SOCKET_URL=https://nestjs-app-latest.onrender.com
     networks:
       - app-network
 

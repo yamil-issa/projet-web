@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, UseGuards } from "@nestjs/common";
 import { Args, Int, Mutation } from "@nestjs/graphql";
 import { Message } from "../../entities/message.entity";
 import { BullQueueProvider } from "../../infrastructure/bullmq/bullQueue.provider";
@@ -7,6 +7,7 @@ import { RedisConfig } from "../../infrastructure/configuration/redis.config";
 import { User } from "../../entities/user.entity";
 import { Conversation } from "../../entities/conversation.entity";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
+import { MessagesGateway } from "src/infrastructure/gateways/messages.gateway";
 
 @Injectable()
 export class SendMessageMutation {
@@ -14,7 +15,8 @@ export class SendMessageMutation {
   constructor(
     private readonly bullQueueProvider: BullQueueProvider,
     private readonly redisConfig: RedisConfig) {}
-
+    @Inject(forwardRef(() => MessagesGateway)) private readonly messagesGateway: MessagesGateway
+    
   @UseGuards(JwtAuthGuard)
   @Mutation(() => Message)
   async sendMessage(
@@ -65,6 +67,8 @@ export class SendMessageMutation {
       conversationId: conversationId,
     });
 
+    // Emit the new message event to WebSocket
+    this.messagesGateway.sendMessageToConversation(conversationId, newMessage);
     return newMessage;
   }
 }

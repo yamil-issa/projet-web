@@ -27,7 +27,6 @@ export class ConversationResolver {
     return parsedConversation;
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query(() => [Conversation])
   async conversations(): Promise<Conversation[]> {
     const redisClient = this.redisConfig.getRedisClient();

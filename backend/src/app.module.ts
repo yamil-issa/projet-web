@@ -8,6 +8,7 @@ import { RedisConfigModule } from './infrastructure/configuration/redis.config.m
 import { AuthModule } from './auth/auth.module';
 import { AppRoutingModule } from './app.routing-module';
 import { JwtModule } from '@nestjs/jwt';
+import { MessagesGateway } from './infrastructure/gateways/messages.gateway';
 
 @Module({
   imports: [
@@ -27,5 +28,6 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '60m' },
     }),
   ],
+  providers: [MessagesGateway],
 })
 export class AppModule {}

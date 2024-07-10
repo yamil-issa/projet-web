@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
+import io from 'socket.io-client';
 
 const GET_MESSAGES = gql`
   query GetMessages($conversationId: Int!) {
@@ -32,7 +33,7 @@ interface MessagesListProps {
 }
 
 const MessagesList: React.FC<MessagesListProps> = ({ conversationId }) => {
-  const { loading, error, data } = useQuery<{ conversationMessages: Message[] }>(GET_MESSAGES, {
+  const { loading, error, data, refetch } = useQuery<{ conversationMessages: Message[] }>(GET_MESSAGES, {
     variables: { conversationId },
     context: {
       headers: {
@@ -40,18 +41,39 @@ const MessagesList: React.FC<MessagesListProps> = ({ conversationId }) => {
       }
     }
   });
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      const sortedMessages = [...data.conversationMessages].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      setMessages(sortedMessages);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const socket = io('http://localhost:4000');
+
+    socket.emit('joinConversation', conversationId);
+
+    socket.on('newMessage', (message: Message) => {
+      setMessages(prevMessages => [...prevMessages, message].sort(
+        (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      ));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [conversationId]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
-  // Make a copy of the messages array and sort it by date, from the oldest to the newest
-  const sortedMessages = [...(data?.conversationMessages || [])].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
-
   return (
     <div className="messages-list">
-      {sortedMessages.map((message) => (
+      {messages.map((message) => (
         <div key={message.id} className="message">
           <div className="message-text">{message.content}</div>
           <div className="message-time">{new Date(message.createdAt).toLocaleString()}</div>

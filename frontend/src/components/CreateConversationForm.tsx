@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
+import React, { useState, useContext, useEffect } from 'react';
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { AuthContext } from '../context/AuthContext';
+
+const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      username
+      email
+    }
+  }
+`;
 
 const CREATE_CONVERSATION = gql`
   mutation CreateConversation($userId1: Int!, $userId2: Int!) {
     createConversation(userId1: $userId1, userId2: $userId2) {
       id
-      participantIds
+      participants {
+        id
+        username
+      }
       messages {
         id
         content
@@ -22,16 +36,47 @@ const CREATE_CONVERSATION = gql`
 `;
 
 const CreateConversationForm: React.FC = () => {
-  const [newConversationUserId, setNewConversationUserId] = useState('');
-  const [createConversation] = useMutation(CREATE_CONVERSATION);
+  const { user } = useContext(AuthContext);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [usernameSearch, setUsernameSearch] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState<{ id: number, username: string }[]>([]);
+
+  const { data: usersData } = useQuery(GET_USERS);
+  const [createConversation] = useMutation(CREATE_CONVERSATION, {
+    context: {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (usersData && usernameSearch) {
+      setFilteredUsers(
+        usersData.users.filter((u: { username: string }) =>
+          u.username.toLowerCase().includes(usernameSearch.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredUsers([]);
+    }
+  }, [usersData, usernameSearch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await createConversation({ variables: { userId1: 1, userId2: parseInt(newConversationUserId) } }); // Remplacez `userId1: 1` par l'ID de l'utilisateur actuel
-      setNewConversationUserId('');
-    } catch (error) {
-      console.error('Error creating conversation:', error);
+    if (selectedUserId && user?.sub) {
+      try {
+        await createConversation({
+          variables: {
+            userId1: user.sub,
+            userId2: selectedUserId,
+          },
+        });
+        setUsernameSearch('');
+        setSelectedUserId(null);
+      } catch (error) {
+        console.error('Error creating conversation:', error);
+      }
     }
   };
 
@@ -39,11 +84,24 @@ const CreateConversationForm: React.FC = () => {
     <form className="create-conversation-form" onSubmit={handleSubmit}>
       <input
         type="text"
-        value={newConversationUserId}
-        onChange={(e) => setNewConversationUserId(e.target.value)}
-        placeholder="User ID to start conversation with..."
+        value={usernameSearch}
+        onChange={(e) => setUsernameSearch(e.target.value)}
+        placeholder="Search username..."
       />
-      <button type="submit">Create</button>
+      {filteredUsers.length > 0 && (
+        <ul className="user-list">
+          {filteredUsers.map((u) => (
+            <li
+              key={u.id}
+              className={`user-item ${selectedUserId === u.id ? 'selected' : ''}`}
+              onClick={() => setSelectedUserId(u.id)}
+            >
+              {u.username}
+            </li>
+          ))}
+        </ul>
+      )}
+      <button type="submit" disabled={!selectedUserId}>Create</button>
     </form>
   );
 };

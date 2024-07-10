@@ -6,6 +6,7 @@ import SendMessageForm from './components/SendMessageForm';
 import CreateConversationForm from './components/CreateConversationForm';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import LogoutButton from './components/LogoutButton';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import './App.css';
 
@@ -24,8 +25,9 @@ const App: React.FC = () => {
               <RequireAuth>
                 <div className="app">
                   <div className="sidebar">
-                    <ConversationsList onSelectConversation={setSelectedConversation} />
+                    <LogoutButton />
                     <CreateConversationForm />
+                    <ConversationsList onSelectConversation={setSelectedConversation} />
                   </div>
                   <div className="main">
                     {selectedConversation ? (

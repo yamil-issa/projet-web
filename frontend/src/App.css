@@ -10,6 +10,8 @@
 }
 
 .main {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   padding: 10px;
 }
@@ -40,30 +42,12 @@
   color: #999;
 }
 
-.messages-list {
-  overflow-y: auto;
-  height: calc(100% - 50px);
-}
-
-.message {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.message-text {
-  margin-bottom: 5px;
-}
-
-.message-time {
-  font-size: 0.8em;
-  color: #999;
-}
-
 .send-message-form {
   display: flex;
   align-items: center;
   padding: 10px;
   border-top: 1px solid #ddd;
+  background-color: #fff;
 }
 
 .send-message-form input {
@@ -114,7 +98,7 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 200px; /* Adjust as needed */
+  max-height: 200px;
   overflow-y: auto;
 }
 

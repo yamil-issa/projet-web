@@ -14,13 +14,13 @@ Il s'agit d'une plateforme de messagerie instantanée avec déploiement continu
 ## Acceder au projet 
 
 ### En ligne
-La plateforme est hebergé sur render, vous pouvez y acceder avec cet url : `https://react-app-latest-4tgy.onrender.com`
+La plateforme est hebergé sur render, vous pouvez y accéder avec cet url : `https://react-app-latest-4tgy.onrender.com`
 
 ### En local avec Docker
 - Clonez le projet avec la commande `https://github.com/yamil-issa/projet-web.git`
 - Lancez docker
-- Placez-vous à la racine du projet et executer la commande : `docker compose up -d`
-- Une fois les containers lancés vous pouvez acceder au projet avec cet url : ` http://localhost:3000`
+- Placez-vous à la racine du projet et exécuter la commande : `docker compose up -d`
+- Une fois les containers lancés vous pouvez accéder au projet avec cet url : ` http://localhost:3000`
 
 ### En local sans Docker 
 - Clonez le projet avec la commande `https://github.com/yamil-issa/projet-web.git`
@@ -31,5 +31,5 @@ La plateforme est hebergé sur render, vous pouvez y acceder avec cet url : `htt
   `REACT_APP_API_URL=https://nestjs-app-latest.onrender.com/api`
   `REACT_APP_SOCKET_URL=https://nestjs-app-latest.onrender.com`
 - Lancer l'application avec la commande `npm start`
-- Vous pouvez acceder au projet avec cet url : `http://localhost:3000`
+- Vous pouvez accéder au projet avec cet url : `http://localhost:3000`
 

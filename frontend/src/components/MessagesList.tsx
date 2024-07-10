@@ -53,7 +53,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ conversationId }) => {
   }, [data]);
 
   useEffect(() => {
-    const socket = io(process.env.REACT_APP_SOCKET_URL as string);
+    const socket = io(process.env.REACT_APP_SOCKET_URL as string || 'https://nestjs-app-latest.onrender.com');
 
     socket.emit('joinConversation', conversationId);
 

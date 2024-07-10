@@ -47,7 +47,7 @@ jobs:
 
     - name: Tag backend Docker image
       run: |
-        BACKEND_IMAGE_ID=$(docker images nestjs-app -q)
+        BACKEND_IMAGE_ID=$(docker images -q nestjs-app)
         if [ -z "$BACKEND_IMAGE_ID" ]; then
           echo "Error: Backend image ID not found"
           exit 1
@@ -56,7 +56,7 @@ jobs:
 
     - name: Push backend Docker image to Docker Hub
       run: |
-        BACKEND_IMAGE_ID=$(docker images nestjs-app -q)
+        BACKEND_IMAGE_ID=$(docker images -q nestjs-app)
         if [ -z "$BACKEND_IMAGE_ID" ]; then
           echo "Error: Backend image ID not found"
           exit 1
@@ -70,7 +70,7 @@ jobs:
 
     - name: Tag frontend Docker image
       run: |
-        FRONTEND_IMAGE_ID=$(docker images react-app -q)
+        FRONTEND_IMAGE_ID=$(docker images -q react-app)
         if [ -z "$FRONTEND_IMAGE_ID" ]; then
           echo "Error: Frontend image ID not found"
           exit 1
@@ -79,7 +79,7 @@ jobs:
 
     - name: Push frontend Docker image to Docker Hub
       run: |
-        FRONTEND_IMAGE_ID=$(docker images react-app -q)
+        FRONTEND_IMAGE_ID=$(docker images -q react-app)
         if [ -z "$FRONTEND_IMAGE_ID" ]; then
           echo "Error: Frontend image ID not found"
           exit 1

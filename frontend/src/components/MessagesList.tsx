@@ -53,7 +53,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ conversationId }) => {
   }, [data]);
 
   useEffect(() => {
-    const socket = io('http://localhost:4000');
+    const socket = io(process.env.REACT_APP_SOCKET_URL as string);
 
     socket.emit('joinConversation', conversationId);
 
